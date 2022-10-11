@@ -1,0 +1,44 @@
+Bootstrap: docker
+From: nvcr.io/nvidia/nvhpc:22.7-runtime-cuda11.7-ubuntu22.04
+
+%labels
+    Version v0.0.1
+
+%help
+    This is a demo container used to illustrate a def file.
+
+%post
+    apt-get update -y && apt-get upgrade -y
+    apt-get install build-essential zlib1g-dev \
+        libncurses5-dev libgdbm-dev libnss3-dev \
+        libssl-dev libreadline-dev libffi-dev libbz2-dev \
+        gcc libsqlite3-dev \
+        nvidia-cuda-toolkit \
+        sqlite3 curl git -y
+    #curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-405.0.0-linux-x86_64.tar.gz
+    #tar -xf google-cloud-cli-405.0.0-linux-x86_64.tar.gz
+    #./google-cloud-sdk/install.sh
+    #rm -rf /var/lib/apt/lists/*
+    apt-get install apt-transport-https ca-certificates gnupg -y
+    echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | tee /usr/share/keyrings/cloud.google.gpg
+    apt-get update -y
+    apt-get install google-cloud-cli -y
+    apt-get update -y
+    curl -O https://www.python.org/ftp/python/3.8.10/Python-3.8.10.tar.xz
+    tar -xf Python-3.8.10.tar.xz
+    cd Python-3.*
+    ./configure --enable-optimizations
+    make install
+    ln -s /usr/local/bin/python3.8 /usr/local/bin/python
+    curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+    python get-pip.py
+    python -m pip install --upgrade pip
+    python -m pip install --upgrade "jax[cpu]"
+    python -m pip install "jax[cuda11_cudnn82]" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
+    python -m pip install --ignore-installed PyYAML
+    python -m pip install apache-beam
+    python -m pip install gitpython
+    python -m pip install git+https://github.com/EleutherAI/CommonLoopUtils
+    python -m pip install git+https://github.com/google-research/t5x
+    ##python -m pip install git+https://github.com/GoogleCloudPlatform/gsutil
